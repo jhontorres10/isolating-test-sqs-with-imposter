@@ -12,13 +12,15 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.time.Duration;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 
 @WireMockTest(httpPort = 8090) // imposter
@@ -51,8 +53,10 @@ class IsolatingTestSqsWithImposterApplicationTests extends BaseIsolatingTest {
 				.andDo(print())
 				.andExpect(status().isOk());
 
-		Thread.sleep(3_000);
-		verify(awsListener).callback(any(String.class));
+		await().atMost(Duration.ofSeconds(3))
+				.untilAsserted( () -> {
+					verify(awsListener).callback(message);
+				});
 	}
 
 }

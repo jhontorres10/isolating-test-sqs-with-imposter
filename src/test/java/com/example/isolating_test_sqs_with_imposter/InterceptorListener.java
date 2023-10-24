@@ -16,6 +16,7 @@ import java.net.http.HttpResponse;
 @Slf4j
 @Service
 public class InterceptorListener {
+    protected static final HttpClient CLIENT = HttpClient.newBuilder().build();
     private final SqsTemplate sqsTemplate;
 
     public InterceptorListener(SqsTemplate sqsTemplate) {
@@ -35,8 +36,7 @@ public class InterceptorListener {
                 .uri(new URI("http://localhost:8090/" + queueInQueue))
                 .GET()
                 .build();
-        var client = HttpClient.newBuilder().build();
-        var responseMock = client.send(request, HttpResponse.BodyHandlers.ofString()).body();
+        var responseMock = CLIENT.send(request, HttpResponse.BodyHandlers.ofString()).body();
         sqsTemplate.send(queueOutQueue, responseMock);
         System.out.println("finish the interception");
     }
