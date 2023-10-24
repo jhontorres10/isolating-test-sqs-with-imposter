@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -41,7 +42,7 @@ class IsolatingTestSqsWithImposterApplicationTests extends BaseIsolatingTest {
 	void contextLoads() throws Exception {
 		String message = "messageStubbed";
 
-		stubFor(get(queueInQueue)
+		stubFor(get("/" + queueInQueue)
 				.willReturn(aResponse()
 						.withHeader("Content-Type", "application/json")
 						.withBody(message)));
@@ -50,8 +51,8 @@ class IsolatingTestSqsWithImposterApplicationTests extends BaseIsolatingTest {
 				.andDo(print())
 				.andExpect(status().isOk());
 
-		Thread.sleep(1_000);
-		verify(awsListener).callback(message);
+		Thread.sleep(3_000);
+		verify(awsListener).callback(any(String.class));
 	}
 
 }

@@ -5,7 +5,6 @@ import io.awspring.cloud.sqs.operations.SqsTemplate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -17,8 +16,8 @@ public class HomeController {
     private String queueInQueue;
 
     @PostMapping
-    public String inputFlow(@RequestBody String text) {
-        return sqsTemplate.send(queueInQueue, text)
+    public String inputFlow() {
+        return sqsTemplate.send(queueInQueue, "random message")
                 .messageId()
                 .toString();
     }

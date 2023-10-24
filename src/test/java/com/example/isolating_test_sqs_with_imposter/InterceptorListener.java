@@ -30,6 +30,7 @@ public class InterceptorListener {
 
     @SqsListener("${sqs.in.queue}")
     public void callback(String message) throws URISyntaxException, IOException, InterruptedException {
+        System.out.println("start the interception");
         var request = HttpRequest.newBuilder()
                 .uri(new URI("http://localhost:8090/" + queueInQueue))
                 .GET()
@@ -37,6 +38,7 @@ public class InterceptorListener {
         var client = HttpClient.newBuilder().build();
         var responseMock = client.send(request, HttpResponse.BodyHandlers.ofString()).body();
         sqsTemplate.send(queueOutQueue, responseMock);
+        System.out.println("finish the interception");
     }
 
 }
